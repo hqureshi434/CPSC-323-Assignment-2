@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Syntax.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
