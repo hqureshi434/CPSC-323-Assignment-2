@@ -1,0 +1,11 @@
+Token:		Lexeme:
+
+a		String
+
+=		String
+
+b		String
+
++		String
+
+c;		String

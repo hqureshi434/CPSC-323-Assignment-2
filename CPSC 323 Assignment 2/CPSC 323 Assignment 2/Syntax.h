@@ -3,6 +3,9 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
 
 using namespace std;
 
@@ -12,5 +15,6 @@ private:
 public:
 	Syntax() {}; //Default Constructor
 
-
+	
 };
+

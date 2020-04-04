@@ -115,7 +115,7 @@ public:
 		ofstream fileWriter; //Created so we can write the output to a separate file
 
 		fileWriter.open(outputFile); //This will create a new file to write the output to
-		fileWriter << "Token:		    Lexeme:\n";
+		fileWriter << "Token:		Lexeme:\n";
 
 		if (!file.is_open()) {
 			cout << "Cannot open file";
@@ -128,7 +128,7 @@ public:
 				fileWriter << "\n";
 				currentWord = lexArr[countWord].token;//Gets the word from the struct array and sets it to a string
 
-				for (int i = 0; i < currentWord.length(); i++) {
+				for (size_t i = 0; i < currentWord.length(); i++) {
 					currentChar = currentWord[i]; //Grab each character from the word that came from the array
 					col = getCharState(currentChar); //This will return the transition type for the current character
 
@@ -145,7 +145,7 @@ public:
 						}
 
 						tool.lex = lexName(tool.lexNumber);
-						fileWriter << tool.token << "			" << tool.lex << "\n"; //Write the results to the text file
+						fileWriter << tool.token << "		" << tool.lex << "\n"; //Write the results to the text file
 					
 						currentWord = "";
 					}
