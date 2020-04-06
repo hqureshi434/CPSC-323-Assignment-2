@@ -15,10 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Lexer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Syntax.h">
+    <ClInclude Include="Analysis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
