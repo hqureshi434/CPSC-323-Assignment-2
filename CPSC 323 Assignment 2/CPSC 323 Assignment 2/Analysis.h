@@ -268,6 +268,7 @@ public:
 		int currentState = Ignore;
 		int prevState = Ignore;
 		string currentWord = "";
+		
 
 		//File objects
 		fstream file(filename, ios::in); //This will read in the file
@@ -305,7 +306,11 @@ public:
 
 						tool.lex = lexName(tool.lexNumber);
 						fileWriter << tool.token << "		" << tool.lex << "\n"; //Write the results to the text file
-						
+						string compareWord = tool.lex;
+						//Have a series of if statements that use the functions from the syntax code 
+						/*if (compareWord.compare(String)) {
+
+						}*/
 
 						currentWord = "";
 					}
