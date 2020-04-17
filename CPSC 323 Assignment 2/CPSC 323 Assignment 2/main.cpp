@@ -1,14 +1,14 @@
 // CPSC 323 Assignment 1.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-#include "Lexer.h"
+#include "Analysis.h"
 #include <iostream>
 
 using namespace std;
 
 int main()
 {
-    lexer lexicalAnalysis = lexer("Input.txt", "Result.txt");
+    Analysis lexicalAnalysis = Analysis("Input.txt", "Result.txt");
  
     return 0;
 }

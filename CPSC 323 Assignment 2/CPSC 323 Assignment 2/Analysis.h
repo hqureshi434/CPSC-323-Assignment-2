@@ -150,7 +150,7 @@ public:
 	string Keywords() { //Keywords - syntaxKey
 		string phrase;
 
-		char parenthesisWords[10][10] = { "if", "while", "for", "forend","function", "main" }; //wordsWithParenthese
+		char parenthesisWords[10][10] = { "if", "while", "for", "forend","function", "main" }; //words With Parentheses
 		for (int i = 0; i < 7; i++) {
 			if (strcmp(testWord, parenthesisWords[i]) == 0)
 				status = true;
@@ -308,9 +308,9 @@ public:
 						fileWriter << tool.token << "		" << tool.lex << "\n"; //Write the results to the text file
 						string compareWord = tool.lex;
 						//Have a series of if statements that use the functions from the syntax code 
-						/*if (compareWord.compare(String)) {
-
-						}*/
+						if (compareWord.compare("String")) {
+							cout << Keywords();
+						}
 
 						currentWord = "";
 					}

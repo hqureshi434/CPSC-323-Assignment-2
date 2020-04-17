@@ -1,2 +1,4 @@
 ﻿  main.cpp
-  CPSC 323 Assignment 2.vcxproj -> C:\Users\Hammad\Desktop\CPSC-323-Assignment-2\CPSC 323 Assignment 2\Debug\CPSC 323 Assignment 2.exe
+c:\users\hammad\desktop\cpsc 323 assignment 2 stuff\cpsc-323-assignment-2\cpsc 323 assignment 2\cpsc 323 assignment 2\analysis.h(79): warning C4018: '<': signed/unsigned mismatch
+c:\users\hammad\desktop\cpsc 323 assignment 2 stuff\cpsc-323-assignment-2\cpsc 323 assignment 2\cpsc 323 assignment 2\analysis.h(86): warning C4018: '<': signed/unsigned mismatch
+  CPSC 323 Assignment 2.vcxproj -> C:\Users\Hammad\Desktop\CPSC 323 Assignment 2 Stuff\CPSC-323-Assignment-2\CPSC 323 Assignment 2\Debug\CPSC 323 Assignment 2.exe
