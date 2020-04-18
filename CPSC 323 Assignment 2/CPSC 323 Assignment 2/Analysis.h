@@ -35,15 +35,15 @@ int stateTable[7][7] = { {0,  Integer, Real, String, Operator, Unknown, Space},
 char keywords[20][15] = { "int", "float", "bool", "true", "false", "if", "else", "then", "endif", "while", 
 				  "whileend", "do", "doend", "for", "forend", "input", "output", "and", "or" , "not" };
 
-ifstream file("Input.txt");
-ofstream myfile;
-
 struct lexeme
 {
 	string lex; //String or char? Should be a string according to professor since we are taking in words from the text document
 	int lexNumber = 0; //lexeme
 	string token; //This will hold text coming from the file
 };
+
+ifstream file("Input.txt");
+ofstream myFile;
 
 class Analysis {
 private:
@@ -52,9 +52,11 @@ private:
 	int countWord; //Acts as the index for the lexArr array
 
 	//For Syntax Analyzer
-	int stackindex = 0;
+	int flag = 0;
+	int lineNumber = 1;
+	int stackIndex = 0;
 	char testChar = ' ';
-	char	stack[20] = " "; 
+	char	stack[20] = " ";
 	char testWord[20];
 	char testCharList[20];
 	bool status; //conditionSet
@@ -71,35 +73,46 @@ public:
 		return false;
 	}
 
-	void Identifiers() { //Identifiers - syntaxID
-		//string str;
+	void Error(string str)
+	{
+		//Clear output file
+		myFile.close();
+		myFile.open("output.txt", ios::out | ios::trunc);
+		// Output error message
+		myFile << "Error: " << str << " line number: " << lineNumber;
+		exit(EXIT_FAILURE);
+	}
+
+	string Identifiers() { //Identifiers - syntaxID
+		string null_str;
 		char operators[] = "+-*/%";
 		bool RHS = true; //rightHandSide
 		bool firstOfLHS = true; //firstofLHS
-		for (int i = 0; i < strlen(testCharList); i++)
+
+		for (size_t i = 0; i < strlen(testCharList); i++)
 		{
 			if (testCharList[i] == '=') { RHS = false; }
 		}
 
 		if (!RHS)
 		{
-			for (int i = 0; i < strlen(testCharList); i++)
+			for (size_t i = 0; i < strlen(testCharList); i++)
 			{
 				for (int j = 0; j < 5; j++) {
-					if (testCharList[i] == operators[j]) {firstOfLHS = false;}	
+					if (testCharList[i] == operators[j]) { firstOfLHS = false; }
 				}
 			}
-			if (firstOfLHS){ myfile << "<Expression> -> <Term> <Expression Prime>\n"; }
-				
-			myfile << "<Term> -> <Factor><TermPrime>\n";
-			myfile << "<Factor> -> <Identifier>\n";
+			if (firstOfLHS) { myFile << "<Expression> -> <Term> <Expression Prime>\n"; }
+
+			myFile << "<Term> -> <Factor><TermPrime>\n";
+			myFile << "<Factor> -> <Identifier>\n";
 		}
 		else
 		{
-			myfile << "<Statement> -> <Assign>\n";
-			myfile << "<Assign> -> <Identifier> = <Expression>\n";
+			myFile << "<Statement> -> <Assign>\n";
+			myFile << "<Assign> -> <Identifier> = <Expression>\n";
 		}
-		//return str;
+		return null_str;
 	}
 
 	string Separators() { //Separators - syntaxSep
@@ -108,9 +121,9 @@ public:
 		char openers[5] = { "([{'" }, closers[] = { ")]}'" };
 		//openers[5] += '"';
 		for (int a = 0; a < 4; a++) {
-			if (testChar == openers[a] && stack[stackindex] != openers[a]) {//know testChar is a closing separator
-				stackindex++;
-				stack[stackindex] = testChar;//add separator to the stack
+			if (testChar == openers[a] && stack[stackIndex] != openers[a]) {//know testChar is a closing separator
+				stackIndex++;
+				stack[stackIndex] = testChar;//add separator to the stack
 
 				if (testChar == '(') {
 					phrase += " <Condition>\n";
@@ -123,10 +136,10 @@ public:
 				return phrase;
 			}
 			else if (testChar == closers[a]) {//know testChar is a closing separator
-				if (openers[a] == stack[stackindex]) {
+				if (openers[a] == stack[stackIndex]) {
 					//continue
-					stack[stackindex] = ' ';
-					stackindex--;
+					stack[stackIndex] = ' ';
+					stackIndex--;
 					if (testChar == ')') {
 						phrase += " <Condition>\n";
 						phrase += " <Condition> -> <StatementList> )";
@@ -138,9 +151,9 @@ public:
 					}
 					return phrase;
 				}
-				/*else {
-					syntaxError("Closing separator incompatible");
-				}*/
+				else {
+					Error("Closing separator incompatible");
+				}
 			}
 		}
 		phrase += " <EndSeparator>\n";
@@ -184,146 +197,211 @@ public:
 		return num;
 	}
 
-	void operators() { //Operators - syntaxOp
-		//string str;
+	string operators() { //Operators - syntaxOp
+		string null_str;
 		if (testChar == '*') {
-			myfile << " <TermPrime> -> * <Factor> <TermPrime>\n";
-			myfile << " <ExpressionPrime> -> <Empty>\n";
+			myFile << " <TermPrime> -> * <Factor> <TermPrime>\n";
+			myFile << " <ExpressionPrime> -> <Empty>\n";
 		}
 		else if (testChar == '/') {
-			myfile << " <TermPrime> -> / <Factor> <TermPrime>\n";
-			myfile << " <ExpressionPrime> -> <Empty>\n";
+			myFile << " <TermPrime> -> / <Factor> <TermPrime>\n";
+			myFile << " <ExpressionPrime> -> <Empty>\n";
 		}
 		else if (testChar == '+') {
-			myfile << " <TermPrime> -> <Empty>\n";
-			myfile << " <ExpressionPrime> -> + <Term> <ExpressionPrime>\n";
+			myFile << " <TermPrime> -> <Empty>\n";
+			myFile << " <ExpressionPrime> -> + <Term> <ExpressionPrime>\n";
 		}
 		else if (testChar == '-') {
-			myfile << " <TermPrime> -> <Empty>\n";
-			myfile << " <ExpressionPrime> -> - <Term> <ExpressionPrime>\n";
+			myFile << " <TermPrime> -> <Empty>\n";
+			myFile << " <ExpressionPrime> -> - <Term> <ExpressionPrime>\n";
 		}
-		myfile << " <Empty>->Epsilon\n";
+		myFile << " <Empty>->Epsilon\n";
 
-		//return str;
+		return null_str;
 	}
 
 	//***********LEXICAL ANALYZER CODE*********************//
-	//Notes: Group Keywords and Identifiers as strings in one loop then in a nested loop do a comparision with the strings to determine if they are 
-	//keywords with the array. If there are any strings left that are not keywords then they will be labeled as idenitifiers.
+	void lexer(int &x) {
+		bool print = false;
+		bool	printline = false; 
+		bool test = false;
+		char ops[] = "+-*/%=";
+		char	seps[] = "'(){}[],.:;!";
+		int i;
 
-	//This function determines the state of the character being read
-	int getCharState(char currentC) {
-		//whitespace
-		if (isspace(currentC)) { return Space; }
-
-		//Checks for integers
-		else if (isdigit(currentC)) { return Integer; }
-
-		//Checks for real numbers
-		else if (currentC == '.') { return Real; }
-		
-		//Checks for operators
-		else if (ispunct(currentC)) { return Operator; }
-
-		//Check for Strings then do a comparison to see if it is a keyword or identifier
-		else if (isalpha(currentC)) { return String; }
-
-		return Unknown;
-	}
-
-	string lexName(int lexeme) { //String function that uses a switch statement to return what a certain token is
-		switch (lexeme) {
-		case Integer:
-			return "Integer";
-			break;
-		case Real:
-			return "Real";
-			break;
-		case String:
-			return "String";
-			break;
-		case Operator:
-			return "Operator";
-			break;
-		case Unknown:
-			return "Unknown";
-			break;
-		case Space:
-			return "Space";
-			break;
-		default:
-			return "Error";
-			break;
+		//discard all spaces
+		while (testChar == ' ') {
+			testChar = file.get();
 		}
-	}
 
-	Analysis() {}; //Default Contructor
-
-	Analysis(string filename, string outputFile) {
-		//Variables
-		lexeme tool;
-		int countWord = 0;
-		char currentChar = ' ';
-		int col = Ignore;
-		int currentState = Ignore;
-		int prevState = Ignore;
-		string currentWord = "";
-		
-
-		//File objects
-		fstream file(filename, ios::in); //This will read in the file
-		ofstream fileWriter; //Created so we can write the output to a separate file
-
-		fileWriter.open(outputFile); //This will create a new file to write the output to
-		fileWriter << "Token:		Lexeme:\n";
-
-		if (!file.is_open()) {
-			cout << "Cannot open file";
+		//check if comment
+		if (testChar == '!') {
+			testChar = file.get();
+			while (testChar != '!') {
+				testChar = file.get();
+			}
+			return;
 		}
-		else {
-			while (!file.eof()) {
-				
-				file >> lexArr[countWord].token; /*Stores each word and character as a string from the file
-										 into the struct lexeme under the variable*/
-				fileWriter << "\n";
-				currentWord = lexArr[countWord].token;//Gets the word from the struct array and sets it to a string
 
-				for (size_t i = 0; i < currentWord.length(); i++) {
-					currentChar = currentWord[i]; //Grab each character from the word that came from the array
-					col = getCharState(currentChar); //This will return the transition type for the current character
-
-					currentState = stateTable[currentState][col]; //Get the current state from the current word
-
-					if (currentState != Ignore) {
-						tool.token = currentWord;
-
-						if (prevState == Ignore) {
-							tool.lexNumber = currentState;
-						}
-						else {
-							tool.lexNumber = prevState;
-						}
-
-						tool.lex = lexName(tool.lexNumber);
-						fileWriter << tool.token << "		" << tool.lex << "\n"; //Write the results to the text file
-						string compareWord = tool.lex;
-						//Have a series of if statements that use the functions from the syntax code 
-						if (compareWord.compare("String")) {
-							cout << Keywords();
-						}
-
-						currentWord = "";
-					}
-					else {
-						currentWord += currentChar;
-						i++;
-					}
-					prevState = currentState;
-				}
-				countWord++;
+		//Check operator
+		for (i = 0; i < 6; ++i)
+		{
+			if (testChar == ops[i]) {
+				//cout << testChar << " is operator\n";
+				myFile << "\n\nToken:\tOperator" << "\t\tLexeme:\t" << testChar;
+				if (printline)
+					myFile << " at line " << lineNumber;
+				myFile << endl;
+				if (print)
+					cout << "\nToken:\tOperator" << "\t\tLexeme:\t" << testChar << endl;
+				myFile << operators();
+				flag = 1;
+				return;
 			}
 		}
-		fileWriter.close();
+
+		//Check seprator
+		for (int m = 0; m < 11; m++)
+		{
+			if (testChar == seps[m]) {
+				//cout << testChar << " is separator\n";
+				myFile << "\n\nToken:\tSeparator" << "\t\tLexeme:\t" << testChar;
+				if (printline)
+					myFile << " at line " << lineNumber;
+				myFile << endl;
+				if (print)
+					cout << "\nToken:\tSeparator" << "\t\tLexeme:\t" << testChar << endl;
+				myFile << Separators();
+				flag = 1;
+				return;
+			}
+		}
+
+		//Check if number
+		if (isdigit(testChar))
+		{
+			//cout << testChar << " is a number\n";
+			char str[5];
+			int x = 0;
+			testWord[x] = '\0';
+			x = 0;
+			str[x] = testChar;
+
+			while (isdigit(file.peek())) {
+				testChar = file.get();
+				str[x] = testChar;
+				x++;
+			}
+
+			myFile << "\n\nToken:\tNumber" << "\t\t\tLexeme:\t";
+			if (x == 0)
+				myFile << str[0];
+			else {
+				for (int u = 0; u < x; u++) {
+					testWord[x] = '\0';
+					myFile << str[u];
+				}
+			}
+			if (printline)
+				myFile << " at line " << lineNumber;
+			myFile << endl;
+			flag = 0;
+			myFile << numbers();
+			return;
+		}
+
+		//If the first character is not operator nor the seperator, get all the rest of word until reach space
+		if (isalnum(testChar) || testChar == '$')
+		{
+			//cout << "IS ALNUM: " << testChar << "\tj = " << j << endl;
+			bool stop = false;
+			char next;
+			if (testChar == ' ' || testChar == '\n')
+				stop = true;
+			while (!stop) {
+				testWord[x++] = testChar;
+				next = file.peek();
+				for (i = 0; i < 11; ++i)
+				{
+					if (next == seps[i]) {
+						stop = true;
+					}
+				}
+				for (i = 0; i < 6; ++i)
+				{
+					if (next == ops[i]) {
+						stop = true;
+					}
+				}
+				if (!stop)
+					testChar = file.get();
+				if (testChar == ' ' || testChar == '\n')
+					stop = true;
+			}
+
+			test = true;
+			//Make the rest of c string become null
+			testWord[x] = '\0';
+			//reset new index of testWord for next testWord
+			x = 0;
+
+
+			if (isKeyword(testWord)) {
+				myFile << "\n\nToken:\tKeyword" << "\t\t\tLexeme:\t" << testWord;
+				if (printline)
+					myFile << " at line " << lineNumber;
+				myFile << endl;
+				if (print)
+					cout << "\nToken:\tKeyword" << "\t\t\tLexeme:\t" << testWord << endl;
+				myFile << Keywords();
+			}
+			else {
+				myFile << "\n\nToken:\tIdentifier" << "\t\tLexeme:\t" << testWord;
+				if (printline)
+					myFile << " at line " << lineNumber;
+				myFile << endl;
+				if (print)
+					cout << "\nToken:\tIdentifier" << "\t\tLexeme:\t" << testWord << endl;
+				myFile << Identifiers();
+			}
+			flag = 0;
+		}
+		//cout << test << endl;
+	}
+
+	//This is the function which the user calls to run the program
+	int mainFunction(string nameOfFile) {
+		myFile.open(nameOfFile);
+
+		if (!file.is_open()) {
+			//cout << "Error while opening the file, please change file name to SampleInputFile\n";
+			cout << "Exited the program";
+			exit(0);
+		}
+
+		int i = 0;
+		int x = 0;
+		while (!file.eof())
+		{
+			testChar = file.get();
+			testCharList[i] = testChar;
+			i++;
+			if (testChar == '\n')
+			{
+				lineNumber++;
+				for (int i = 0; i < 20; i++)
+					testCharList[i] = '\0';
+				i = 0;
+			}
+			lexer(x);
+		}
+		if (stackIndex != 0) {
+			Error("The closing argument was not found");
+		}
+
 		file.close();
+		myFile.close();
+		return 0;
 	}
 };
+	

@@ -8,9 +8,8 @@ using namespace std;
 
 int main()
 {
-    Analysis lexicalAnalysis = Analysis("Input.txt", "Result.txt");
- 
-    return 0;
+	Analysis myAnalysis;
+	myAnalysis.mainFunction("output.txt");
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
